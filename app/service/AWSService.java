@@ -12,8 +12,8 @@ import java.io.File;
 
 public class AWSService {
     private static final String BUCKET_NAME = "first-play-bucket";
-    private static final String ACCESS_KEY = "AKIAUH7LD5P7DAKKH3NF";
-    private static final String SECRET_KEY = "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";
+    private static final String ACCESS_KEY = "";
+    private static final String SECRET_KEY = "";
     private AmazonS3 amazonS3;
 
     public AWSService(){
