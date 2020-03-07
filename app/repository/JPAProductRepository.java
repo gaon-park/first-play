@@ -1,13 +1,11 @@
 package repository;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import repository.DatabaseExecutionContext;
 import models.Product;
 import play.db.jpa.JPAApi;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
@@ -33,7 +31,25 @@ public class JPAProductRepository implements ProductRepository {
 
     @Override
     public CompletionStage<Stream<Product>> list() {
-        return null;
+        return supplyAsync(()->wrap(em -> list(em)), executionContext);
+    }
+
+    @Override
+    public CompletionStage<Product> select(int id){
+        return supplyAsync(()->wrap(em->select(em,id)),executionContext);
+    }
+
+    @Override
+    public void remove(int id){
+        jpaApi.withTransaction(em -> {
+            Query query = em.createNativeQuery("delete from product where id=" + Integer.toString(id));
+            query.executeUpdate();
+        });
+    }
+
+    @Override
+    public CompletionStage<Product> update(Product product){
+        return supplyAsync(()->wrap(em->update(em, product)),executionContext);
     }
 
     private <T> T wrap(Function<EntityManager, T> function){
@@ -48,5 +64,13 @@ public class JPAProductRepository implements ProductRepository {
     private Stream<Product> list(EntityManager em){
         List<Product> productList = em.createQuery("select p from Product p", Product.class).getResultList();
         return productList.stream();
+    }
+
+    private Product select(EntityManager em, int id){
+        return em.find(Product.class, id);
+    }
+
+    private Product update(EntityManager em, Product product){
+        return em.merge(product);
     }
 }

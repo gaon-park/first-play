@@ -10,4 +10,7 @@ import java.util.stream.Stream;
 public interface ProductRepository {
     CompletionStage<Product> add(Product product);
     CompletionStage<Stream<Product>> list();
+    CompletionStage<Product> select(int id);
+    void remove(int id);
+    CompletionStage<Product> update(Product product);
 }

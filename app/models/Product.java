@@ -18,6 +18,13 @@ public class Product {
     @Column(name = "filepath")
     public String filePath;
 
+    public Product(){
+        name = "";
+        info = "";
+        price = "";
+        filePath = "";
+    }
+
     @Override
     public String toString() {
         return "Product{" +

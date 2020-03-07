@@ -12,8 +12,8 @@ import java.io.File;
 
 public class AWSService {
     private static final String BUCKET_NAME = "first-play-bucket";
-    private static final String ACCESS_KEY = "R";
-    private static final String SECRET_KEY = "";
+    private static final String ACCESS_KEY = "AKIAUH7LD5P7DAKKH3NF";
+    private static final String SECRET_KEY = "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";
     private AmazonS3 amazonS3;
 
     public AWSService(){
@@ -34,5 +34,11 @@ public class AWSService {
             }
         }
         return BUCKET_NAME + "/images/" + file.getName();
+    }
+
+    public void removeFile(String filePath){
+        if(amazonS3 != null){
+            amazonS3.deleteObject(BUCKET_NAME, filePath);
+        }
     }
 }
