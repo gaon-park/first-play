@@ -19,4 +19,9 @@ libraryDependencies ++= Seq(
 )
 
 // https://mvnrepository.com/artifact/org.hibernate/hibernate-core
-libraryDependencies += "org.hibernate" % "hibernate-core" % "5.4.0.Final"
+libraryDependencies ++= Seq(
+  "org.hibernate" % "hibernate-core" % "5.4.0.Final"
+)
+
+
+PlayKeys.externalizeResourcesExcludes += baseDirectory.value / "conf" / "META-INF" / "persistence.xml"

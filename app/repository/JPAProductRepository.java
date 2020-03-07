@@ -1,5 +1,7 @@
 package repository;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import repository.DatabaseExecutionContext;
 import models.Product;
 import play.db.jpa.JPAApi;
@@ -17,7 +19,6 @@ public class JPAProductRepository implements ProductRepository {
 
     private final JPAApi jpaApi;
     private final DatabaseExecutionContext executionContext;
-
     @Inject
     public JPAProductRepository(JPAApi jpaApi, DatabaseExecutionContext executionContext){
         this.jpaApi = jpaApi;

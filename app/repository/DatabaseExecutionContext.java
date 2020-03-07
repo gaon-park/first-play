@@ -2,7 +2,6 @@ package repository;
 
 import akka.actor.ActorSystem;
 import play.libs.concurrent.CustomExecutionContext;
-import scala.concurrent.ExecutionContext;
 
 import javax.inject.Inject;
 
@@ -17,20 +16,5 @@ public class DatabaseExecutionContext extends CustomExecutionContext {
     @Inject
     public DatabaseExecutionContext(ActorSystem actorSystem) {
         super(actorSystem, "database.dispatcher");
-    }
-
-    @Override
-    public ExecutionContext prepare() {
-        return super.prepare();
-    }
-
-    @Override
-    public void execute(Runnable command) {
-        super.execute(command);
-    }
-
-    @Override
-    public void reportFailure(Throwable cause) {
-        super.reportFailure(cause);
     }
 }

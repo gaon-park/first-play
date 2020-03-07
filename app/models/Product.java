@@ -2,7 +2,7 @@ package models;
 
 import javax.persistence.*;
 @Entity
-@Table(name = "product")
+@Table(name = "product", schema = "playdb")
 public class Product {
 
     @Id
@@ -15,7 +15,7 @@ public class Product {
     public String info;
     @Column(name = "price")
     public String price;
-    @Column(name = "filePath")
+    @Column(name = "filepath")
     public String filePath;
 
     @Override

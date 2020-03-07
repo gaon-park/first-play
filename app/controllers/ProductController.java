@@ -1,5 +1,6 @@
 package controllers;
 
+import repository.JPAProductRepository;
 import service.AWSService;
 import models.Product;
 import repository.ProductRepository;
@@ -46,7 +47,7 @@ public class ProductController extends Controller {
         product.setInfo(map.get("info")[0]);
 
 //        product.setFilePath(awsService.uploadFile(file));
-        productRepository.add(product);
+//        productRepository.add(product);
 
 
 //        productRepository.add(product).thenApplyAsync(p -> redirect(routes.ProductController.index()), context.current());
