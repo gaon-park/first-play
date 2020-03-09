@@ -1,0 +1,19 @@
+version: '3'
+services:
+        #mysql
+        db:
+                image: mysql:5.7
+                container_name: mysql_host
+                environment:
+                        #MYSQL_ROOT_PASSWORD: 1234
+                        MYSQL_DATABASE: "playdb"
+                        MYSQL_USER: "admin"
+                        MYSQL_PASSWORD: "1234"
+                        MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+                command: mysqld --sql_mode="ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION" --default_storage_engine=InnoDB --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+                volumes:
+                        - ./db-data:/var/lib/mysql
+                        #- ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+                        - ./db-init:/docker-entrypoint-initdb.d
+                ports:
+                        - 3306:3306
