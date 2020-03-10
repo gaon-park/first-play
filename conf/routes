@@ -2,10 +2,10 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET     /                           controllers.ProductController.getProducts()
-GET     /:id                        controllers.ProductController.getOneProduct(id: Integer)
-POST    /                           controllers.ProductController.addProduct(request : Request)
-PUT     /                           controllers.ProductController.modifyProduct(request: Request)
-DELETE  /:id                        controllers.ProductController.removeProduct(id: Integer)
+GET     /products                           controllers.ProductController.getProducts()
+GET     /product:id                        controllers.ProductController.getOneProduct(id: Integer)
+POST    /product                           controllers.ProductController.addProduct(request : Request)
+PUT     /product                           controllers.ProductController.modifyProduct(request: Request)
+DELETE  /product:id                        controllers.ProductController.removeProduct(id: Integer)
 
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
