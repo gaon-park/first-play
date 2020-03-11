@@ -1,7 +1,5 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import repository.JPAProductRepository;
 import service.AWSService;
 import models.Product;
 import repository.ProductRepository;

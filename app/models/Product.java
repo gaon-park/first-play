@@ -8,15 +8,15 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    public int id;
+    private int id;
     @Column(name = "name")
-    public String name;
+    private String name;
     @Column(name = "info")
-    public String info;
+    private String info;
     @Column(name = "price")
-    public String price;
+    private String price;
     @Column(name = "filepath")
-    public String filePath;
+    private String filePath;
 
     public Product(){
         name = "";
