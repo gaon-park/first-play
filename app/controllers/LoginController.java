@@ -2,6 +2,7 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import models.User;
+import play.libs.concurrent.HttpExecutionContext;
 import play.libs.ws.WSClient;
 import play.mvc.Controller;
 import play.mvc.Http;
@@ -9,25 +10,33 @@ import play.mvc.Result;
 import repository.UserRepository;
 
 import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 
-public class GithubOAuthController extends Controller {
+import static play.libs.Json.toJson;
+
+public class LoginController extends Controller {
     private final static String CLIENT_ID = "2f0f7ccd9659b70d0bc5";
     private final static String CLIENT_SECRET = "6f0d56d94315681b0eed8789f4260e97ad40988f";
     private final static String REDIRECT_URI = "http://localhost:9000/callback";
     private String ACCESS_TOKEN;
 
     private final WSClient ws;
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final HttpExecutionContext context;
 
     @Inject
-    public GithubOAuthController(WSClient ws, UserRepository userRepository){
+    public LoginController(WSClient ws, UserRepository userRepository, HttpExecutionContext context){
         this.ws = ws;
         this.userRepository = userRepository;
+        this.context = context;
     }
 
     public Result index(){
-        return ok(String.valueOf(notAcceptable()));
+        return ok("index");
     }
 
     public Result sendGitOAuth(){
@@ -35,7 +44,7 @@ public class GithubOAuthController extends Controller {
         return redirect(url);
     }
 
-    public Result callback(String code, Http.Request request){
+    public Result callback(String code, Http.Request request) throws ExecutionException, InterruptedException {
         CompletionStage<JsonNode> completionStage = ws.url("https://github.com/login/oauth/access_token")
                 .addHeader("Accept", "application/json")
                 .addQueryParameter("code", code)
@@ -44,40 +53,39 @@ public class GithubOAuthController extends Controller {
                 .execute("POST")
                 .thenApply(r -> r.asJson());
         JsonNode jsonNode = null;
-        try {
-            jsonNode = completionStage.toCompletableFuture().get();
-            ACCESS_TOKEN = jsonNode.get("access_token").asText();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        setUser(request);
+        jsonNode = completionStage.toCompletableFuture().get();
+        ACCESS_TOKEN = jsonNode.get("access_token").asText();
 
-        return ok(jsonNode);
-    }
-
-    private void setUser(Http.Request request){
-        CompletionStage<JsonNode> completionStage = ws.url("https://api.github.com/user")
+        completionStage = ws.url("https://api.github.com/user")
                 .addHeader("Authorization", "Token " + ACCESS_TOKEN)
                 .get().thenApply(r -> r.asJson());
-        JsonNode jsonNode = null;
-        try {
-            jsonNode = completionStage.toCompletableFuture().get();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        jsonNode = completionStage.toCompletableFuture().get();
 
         int id = Integer.parseInt(jsonNode.get("id").toString());
         CompletionStage<User> userCompletionStage = userRepository.select(id);
-        if(userCompletionStage == null) {
+        if(userCompletionStage.toCompletableFuture().get() == null) {
             User user = new User();
             user.setId(id);
             user.setName(jsonNode.get("name").toString());
             user.setHtml_url(jsonNode.get("html_url").toString());
 
             userRepository.add(user);
-
-            request.session().adding("id", Integer.toString(id));
         }
+
+        return redirect("/user/" + id).addingToSession(request, "id", Integer.toString(id)).addingToSession(request, "access_token", ACCESS_TOKEN);
+    }
+
+    public CompletionStage<Result> getUserInfo(Integer id, Http.Request request){
+        if(request.session().get("id").isPresent()){
+            CompletionStage<User> completionStage = userRepository.select(id);
+            return completionStage.thenApplyAsync(user -> ok(toJson(user)), context.current());
+        }
+        return null;
+    }
+
+    public Result logout(Http.Request request){
+        return ok("logout").removingFromSession(request, "id").removingFromSession(request, "access_token");
     }
 }

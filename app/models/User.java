@@ -13,7 +13,14 @@ public class User {
     @Column(name = "html_url")
     private String html_url;
 
-    private String ACCESS_TOKEN;
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", html_url='" + html_url + '\'' +
+                '}';
+    }
 
     public int getId() {
         return id;
@@ -38,4 +45,5 @@ public class User {
     public void setHtml_url(String html_url) {
         this.html_url = html_url;
     }
+
 }
