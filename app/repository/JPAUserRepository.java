@@ -1,6 +1,6 @@
 package repository;
 
-import models.User;
+import models.database.User;
 import play.db.jpa.JPAApi;
 
 import javax.inject.Inject;

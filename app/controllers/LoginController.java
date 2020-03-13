@@ -1,93 +1,67 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import models.User;
-import play.libs.concurrent.HttpExecutionContext;
-import play.libs.ws.WSClient;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import play.mvc.Results;
-import repository.UserRepository;
+import service.GithubService;
+import service.UserService;
 
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 
-import static play.libs.Json.toJson;
-
+/**
+ * this controller is necessary by using to login with github oauth api
+ *
+ * @author Gaon Park
+ */
 public class LoginController extends Controller {
-    private final static String CLIENT_ID = "2f0f7ccd9659b70d0bc5";
-    private final static String CLIENT_SECRET = "6f0d56d94315681b0eed8789f4260e97ad40988f";
-    private final static String REDIRECT_URI = "http://localhost:9000/callback";
-    private String ACCESS_TOKEN;
-
-    private final WSClient ws;
-    private final UserRepository userRepository;
-    private final HttpExecutionContext context;
+    private GithubService githubService;
+    private UserService userService;
 
     @Inject
-    public LoginController(WSClient ws, UserRepository userRepository, HttpExecutionContext context){
-        this.ws = ws;
-        this.userRepository = userRepository;
-        this.context = context;
+    public LoginController(GithubService githubService, UserService userService){
+        this.githubService = githubService;
+        this.userService = userService;
     }
 
+    /**
+     * you can access by 'get /login' to login
+     * @return
+     */
     public Result sendGitOAuth(){
-        //get code from github
-        String url = "https://github.com/login/oauth/authorize?client_id=" + CLIENT_ID + "&redirect_uri=" + REDIRECT_URI;
-        return redirect(url);
+        return redirect(githubService.getGitOAuthUrl());
     }
 
-    public Result callback(String code, Http.Request request) throws ExecutionException, InterruptedException {
-        // get access_token from github
-        CompletionStage<JsonNode> completionStage = ws.url("https://github.com/login/oauth/access_token")
-                .addHeader("Accept", "application/json")
-                .addQueryParameter("code", code)
-                .addQueryParameter("client_id",CLIENT_ID)
-                .addQueryParameter("client_secret", CLIENT_SECRET)
-                .execute("POST")
-                .thenApply(r -> r.asJson());
-        JsonNode jsonNode = null;
+    /**
+     * This is a function that is called back automatically by github.
+     * if you got access_token from git hub, you can get permission by session.
+     * @param code
+     * @param request
+     * @return
+     */
+    public Result callback(String code, Http.Request request) {
+        // main thread
+        // not main
 
-        jsonNode = completionStage.toCompletableFuture().get();
-        ACCESS_TOKEN = jsonNode.get("access_token").asText();
-
-        // get user information from github
-        completionStage = ws.url("https://api.github.com/user")
-                .addHeader("Authorization", "Token " + ACCESS_TOKEN)
-                .get().thenApply(r -> r.asJson());
-
-        jsonNode = completionStage.toCompletableFuture().get();
-
-        int id = Integer.parseInt(jsonNode.get("id").toString());
-
-        // Verify that there are users in the database
-        CompletionStage<User> userCompletionStage = userRepository.select(id);
-        if(userCompletionStage.toCompletableFuture().get() == null) {
-            User user = new User();
-            user.setId(id);
-            user.setName(jsonNode.get("name").toString());
-            user.setHtml_url(jsonNode.get("html_url").toString());
-
-            userRepository.add(user);
+        int id = 0;
+        try {
+            githubService.getAccessToken(code);
+            id = userService.add(githubService.getUserInfo());
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
-        return redirect("/user/" + id).addingToSession(request, "id", Integer.toString(id)).addingToSession(request, "access_token", ACCESS_TOKEN);
+        return redirect("/user/" + id).addingToSession(request, "id", Integer.toString(id));
     }
 
-    public CompletionStage<Result> getUserInfo(Integer id, Http.Request request){
-        if(request.session().get("id").isPresent()){
-            CompletionStage<User> completionStage = userRepository.select(id);
-            return completionStage.thenApplyAsync(user -> ok(toJson(user)), context.current());
-        }
-        return CompletableFuture.completedFuture(Results.unauthorized());
-    }
-
+    /**
+     * you can logout by 'get /logout'.
+     * you lose your permission.
+     * @param request
+     * @return
+     */
     public Result logout(Http.Request request){
         return ok("logout").removingFromSession(request, "id").removingFromSession(request, "access_token");
     }

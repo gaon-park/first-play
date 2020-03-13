@@ -1,115 +1,116 @@
 package controllers;
 
+import models.request.ProductRequest;
+import models.response.ProductResponse;
+import play.data.Form;
+import play.mvc.Http.MultipartFormData.FilePart;
 import service.AWSService;
-import models.Product;
-import repository.ProductRepository;
+import models.database.Product;
 import play.data.FormFactory;
 import play.libs.Files;
-import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import service.ProductService;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import static play.libs.Json.toJson;
 
+/**
+ * this controller is necessary to get product information
+ *
+ * @author Gaon Park
+ */
 public class ProductController extends Controller {
-    private final FormFactory formFactory;
-    private final ProductRepository productRepository;
-    private final HttpExecutionContext context;
+    private FormFactory formFactory;
     private AWSService awsService;
+    private ProductService productService;
 
     @Inject
-    public ProductController(FormFactory formFactory, ProductRepository productRepository, HttpExecutionContext context){
+    public ProductController(FormFactory formFactory, ProductService productService, AWSService awsService){
         this.formFactory = formFactory;
-        this.productRepository = productRepository;
-        this.context = context;
-        awsService = new AWSService();
+        this.awsService = awsService;
+        this.productService = productService;
+    }
+    /**
+     * you can access by 'post /product' to add Product
+     * (required form field)
+     * Return the Product object just inserted
+     * @param request
+     * @return Result
+     */
+    public Result addProduct(Http.Request request) {
+
+        Form<ProductRequest> productForm = formFactory.form(ProductRequest.class).bindFromRequest(request);
+        if(productForm.hasErrors()){
+            return badRequest();
+        } else {
+            ProductRequest productRequest = productForm.get();
+            Http.MultipartFormData body = request.body().asMultipartFormData();
+            FilePart<Files.TemporaryFile> image = body.getFile("image");
+            String filePath = awsService.uploadFile(image.getRef().path().toFile());
+            productService.addProduct(productRequest, filePath);
+            return redirect("/products");
+        }
     }
 
-    public Result index(){
-        return ok("hello!");
+    /**
+     * you can access by 'get /products' to get list of product in Product table
+     * @return Result
+     */
+    public Result getProducts(){
+//        System.out.println(productService.getProducts());
+        List<ProductResponse> list = productService.getProducts();
+        return ok(toJson(list));
     }
 
-    public CompletionStage<Result> addProduct(final Http.Request request) {
-
-        Http.MultipartFormData body = request.body().asMultipartFormData();
-        Http.MultipartFormData.FilePart<Files.TemporaryFile> image = body.getFile("image");
-        Files.TemporaryFile temporaryFile = image.getRef();
-        File file = temporaryFile.path().toFile();
-
-        Map<String, String[]> map = body.asFormUrlEncoded();
-
-        Product product = setProductValue(map, new Product());
-        product.setFilePath(awsService.uploadFile(file));
-
-        CompletionStage<Product> productCompletionStage = productRepository.add(product);
-        return productCompletionStage.thenApplyAsync(p -> ok(toJson(product)), context.current());
+    /**
+     * you can access by 'get /product/:id' to get one product's information by id
+     * @param id
+     * @return Result
+     */
+    public Result getProductById(Integer id){
+        ProductResponse productResponse = productService.getProductById(id);
+        return ok(toJson(productResponse));
     }
 
-    public CompletionStage<Result> getProducts(){
-        CompletionStage<Stream<Product>> list = productRepository.list();
-        return list.thenApplyAsync(productStream -> ok(toJson(productStream.collect(Collectors.toList()))), context.current());
-    }
-
-    public CompletionStage<Result> getOneProduct(Integer id){
-        CompletionStage<Product> productCompletionStage = productRepository.select(id);
-        return productCompletionStage.thenApplyAsync(product -> ok(toJson(product)), context.current());
-    }
-
+    /**
+     * you can access by 'delete /product/:id' to delete one product by id from Product table
+     * @param id
+     * @return Result
+     */
     public Result removeProduct(Integer id){
-        productRepository.remove(id);
+        productService.removeProduct(id);
         return redirect(routes.ProductController.getProducts());
     }
 
-    public CompletionStage<Result> modifyProduct(final Http.Request request){
-        Http.MultipartFormData body = request.body().asMultipartFormData();
-        Http.MultipartFormData.FilePart<Files.TemporaryFile> image = body.getFile("image");
+    /**
+     * you can access by 'put /product' to update
+     * (required form field)
+     * Return the Product object just updated
+     * @param request
+     * @return Result
+     */
+    public Result updateProduct(Http.Request request){
 
-        Map<String, String[]> map = body.asFormUrlEncoded();
+        Form<ProductRequest> productForm = formFactory.form(ProductRequest.class).bindFromRequest(request);
+        if(productForm.hasErrors()){
+            return badRequest();
+        } else {
+            ProductRequest productRequest = productForm.get();
 
-        CompletionStage<Product> productCompletionStage = productRepository.select(Integer.parseInt(map.get("id")[0]));
-        Product product = null;
-        try {
-            product = productCompletionStage.toCompletableFuture().get();
-            if(image != null) {
-                // remove current file
-                awsService.removeFile(product.getFilePath());
-                // upload new file
-                product.setFilePath(awsService.uploadFile(image.getRef().path().toFile()));
-            }
-            product = setProductValue(map, product);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+            // remove current file
+            awsService.removeFile(productService.getProductById(productRequest.getId()).getFilePath());
+
+            Http.MultipartFormData body = request.body().asMultipartFormData();
+            FilePart<Files.TemporaryFile> image = body.getFile("image");
+            Product product = new Product();
+
+            // upload new file
+            String filePath = awsService.uploadFile(image.getRef().path().toFile());
+            productService.updateProduct(productRequest, filePath);
+            return redirect("/products");
         }
-
-        productCompletionStage = productRepository.update(product);
-        Product finalProduct = product;
-        return productCompletionStage.thenApplyAsync(p -> ok(toJson(finalProduct)), context.current());
-    }
-
-    private Product setProductValue(Map<String, String[]> map, Product product){
-        Product result = new Product();
-
-        //because of the auto_increment makes number
-        if(Integer.valueOf(product.getId()) != null) {
-            result.setId(product.getId());
-        }
-        result.setName((map.get("name")[0] != null) ? map.get("name")[0] : product.getName());
-        result.setPrice((map.get("price")[0] != null) ? map.get("price")[0] : product.getPrice());
-        result.setInfo((map.get("info")[0] != null) ? map.get("info")[0] : product.getInfo());
-        result.setFilePath(product.getFilePath());
-
-        return result;
     }
 }

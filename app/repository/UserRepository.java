@@ -1,7 +1,7 @@
 package repository;
 
 import com.google.inject.ImplementedBy;
-import models.User;
+import models.database.User;
 
 import java.util.concurrent.CompletionStage;
 

@@ -1,6 +1,6 @@
 package repository;
 
-import models.Product;
+import models.database.Product;
 import play.db.jpa.JPAApi;
 
 import javax.inject.Inject;
@@ -30,8 +30,8 @@ public class JPAProductRepository implements ProductRepository {
     }
 
     @Override
-    public CompletionStage<Stream<Product>> list() {
-        return supplyAsync(()->wrap(em -> list(em)), executionContext);
+    public CompletionStage<Stream<Product>> getList() {
+        return supplyAsync(()->wrap(em -> getList(em)), executionContext);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class JPAProductRepository implements ProductRepository {
         return product;
     }
 
-    private Stream<Product> list(EntityManager em){
+    private Stream<Product> getList(EntityManager em){
         List<Product> productList = em.createQuery("select p from Product p", Product.class).getResultList();
         return productList.stream();
     }

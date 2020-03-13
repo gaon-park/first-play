@@ -6,7 +6,7 @@
     <persistence-unit name="defaultPersistenceUnit" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <non-jta-data-source>DefaultDS</non-jta-data-source>
-        <class>models.Product</class>
+        <class>models.database.Product</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
 <!--            <property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver"/>-->
