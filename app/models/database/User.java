@@ -17,4 +17,6 @@ public class User {
     private  String lastName;
     @Column(name = "email")
     private String email;
+    @Column(name = "refresh_token")
+    private String refreshToken;
 }

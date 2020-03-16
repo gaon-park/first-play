@@ -32,6 +32,11 @@ public class JPAUserRepository implements UserRepository {
         return supplyAsync(() -> wrap(em -> select(em, id)), executionContext);
     }
 
+    @Override
+    public CompletionStage<User> update(User user){
+        return supplyAsync(() -> wrap(em -> update(em, user)), executionContext);
+    }
+
     private <T> T wrap(Function<EntityManager, T> function){
         return jpaApi.withTransaction(function);
     }
@@ -43,5 +48,9 @@ public class JPAUserRepository implements UserRepository {
 
     private User select(EntityManager em, int id){
         return em.find(User.class, id);
+    }
+
+    private User update(EntityManager em, User user){
+        return em.merge(user);
     }
 }

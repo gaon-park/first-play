@@ -9,4 +9,5 @@ import java.util.concurrent.CompletionStage;
 public interface UserRepository {
     CompletionStage<User> add(User user);
     CompletionStage<User> select(int id);
+    CompletionStage<User> update(User user);
 }

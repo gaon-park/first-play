@@ -19,10 +19,10 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-json" % "2.8.1"
 )
 
-// https://mvnrepository.com/artifact/org.hibernate/hibernate-core
 libraryDependencies ++= Seq(
   "org.hibernate" % "hibernate-core" % "5.4.0.Final",
-  "org.projectlombok" % "lombok" % "1.16.16"
+  "org.projectlombok" % "lombok" % "1.16.16",
+  "io.jsonwebtoken" % "jjwt" % "0.9.1"
 )
 
 PlayKeys.externalizeResourcesExcludes += baseDirectory.value / "conf" / "META-INF" / "persistence.xml"

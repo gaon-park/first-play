@@ -4,10 +4,16 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import service.GithubService;
+import service.JWTService;
 import service.UserService;
 
 import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+
+import static play.libs.Json.toJson;
 
 /**
  * this controller is necessary by using to login with github oauth api
@@ -17,16 +23,18 @@ import java.util.concurrent.ExecutionException;
 public class LoginController extends Controller {
     private GithubService githubService;
     private UserService userService;
+    private JWTService jwtService;
 
     @Inject
-    public LoginController(GithubService githubService, UserService userService){
+    public LoginController(GithubService githubService, UserService userService, JWTService jwtService){
         this.githubService = githubService;
         this.userService = userService;
+        this.jwtService = jwtService;
     }
 
     /**
      * you can access by 'get /login' to login
-     * @return
+     * @return Result
      */
     public Result sendGitOAuth(){
         return redirect(githubService.getGitOAuthUrl());
@@ -34,7 +42,7 @@ public class LoginController extends Controller {
 
     /**
      * This is a function that is called back automatically by github.
-     * if you got access_token from git hub, you can get permission by session.
+     * if you got access_token from git hub, you can get jwt token.
      * @param code
      * @param request
      * @return
@@ -53,14 +61,16 @@ public class LoginController extends Controller {
             e.printStackTrace();
         }
 
-        return redirect("/user/" + id).addingToSession(request, "id", Integer.toString(id));
+        Map<String, String> tokens = jwtService.createToken(id);
+        userService.insertRefreshToken(id, tokens.get("refreshToken"));
+        return ok(toJson(tokens));
     }
 
     /**
      * you can logout by 'get /logout'.
      * you lose your permission.
      * @param request
-     * @return
+     * @return Result
      */
     public Result logout(Http.Request request){
         return ok("logout").removingFromSession(request, "id").removingFromSession(request, "access_token");

@@ -1,13 +1,19 @@
 package controllers;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import models.response.UserResponse;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Results;
+import service.JWTService;
 import service.UserService;
 
 import javax.inject.Inject;
+import javax.swing.text.html.Option;
+
+import java.util.Map;
+import java.util.Optional;
 
 import static play.libs.Json.toJson;
 
@@ -18,10 +24,12 @@ import static play.libs.Json.toJson;
  */
 public class UserController extends Controller {
     private UserService userService;
+    private JWTService jwtService;
 
     @Inject
-    public UserController(UserService userService){
+    public UserController(UserService userService, JWTService jwtService){
         this.userService = userService;
+        this.jwtService = jwtService;
     }
 
     /**
@@ -31,10 +39,35 @@ public class UserController extends Controller {
      * @return Result
      */
     public Result getUserInfo(Integer id, Http.Request request){
-        if(request.session().get("id").isPresent()){
+        if(permissionCheck(request)){
             UserResponse userResponse = userService.getUserById(id);
             return ok(toJson(userResponse));
         }
         return Results.unauthorized();
+
+//        if(request.session().get("id").isPresent()){
+//            UserResponse userResponse = userService.getUserById(id);
+//            return ok(toJson(userResponse));
+//        }
+//        return Results.unauthorized();
+    }
+
+    public boolean permissionCheck(Http.Request request){
+        Optional<String> token  = request.getHeaders().get("accessToken");
+        boolean result = false;
+        if(token.isPresent()){
+            result = jwtService.validationToken(token.get());
+        }
+        return result;
+    }
+
+    public Result createAccessToken(Http.Request request){
+        Optional<String> accessToken = request.getHeaders().get("accessToken");
+        Optional<String> refreshToken = request.getHeaders().get("refreshToken");
+        Map<String, String> token = null;
+        if(accessToken.isPresent() && refreshToken.isPresent()){
+            token = jwtService.createAccessToken(accessToken.get(), refreshToken.get());
+        }
+        return ok(toJson(token));
     }
 }

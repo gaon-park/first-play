@@ -69,4 +69,28 @@ public class UserService {
         }
         return userResponse;
     }
+
+    public void insertRefreshToken(int id, String refreshToken){
+        UserResponse userResponse = getUserById(id);
+        User user = new User();
+        user.setId(id);
+        user.setFirstName(userResponse.getFirstName());
+        user.setLastName(userResponse.getLastName());
+        user.setEmail(userResponse.getEmail());
+        user.setRefreshToken(refreshToken);
+
+        userRepository.update(user);
+    }
+
+    public String getRefreshToken(int id){
+        CompletionStage<User> userCompletionStage = userRepository.select(id);
+        String refreshToken = null;
+        try{
+            User user = userCompletionStage.toCompletableFuture().get();
+            refreshToken = user.getRefreshToken();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return refreshToken;
+    }
 }
