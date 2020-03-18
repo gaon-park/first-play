@@ -1,7 +1,8 @@
-package service;
+package services.interfaces;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.ImplementedBy;
+import services.GithubServiceImpl;
 
 import java.util.concurrent.ExecutionException;
 

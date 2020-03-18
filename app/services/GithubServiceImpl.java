@@ -1,7 +1,8 @@
-package service;
+package services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import play.libs.ws.WSClient;
+import services.interfaces.GithubService;
 
 import javax.inject.Inject;
 import java.util.concurrent.CompletionStage;

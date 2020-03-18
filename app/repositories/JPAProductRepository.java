@@ -1,4 +1,4 @@
-package repository;
+package repositories;
 
 import models.database.Product;
 import play.db.jpa.JPAApi;

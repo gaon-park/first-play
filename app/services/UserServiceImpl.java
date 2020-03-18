@@ -1,9 +1,10 @@
-package service;
+package services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import models.database.User;
 import models.response.UserResponse;
-import repository.UserRepository;
+import repositories.UserRepository;
+import services.interfaces.UserService;
 
 import javax.inject.Inject;
 import java.util.concurrent.CompletionStage;

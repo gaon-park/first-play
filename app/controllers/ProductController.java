@@ -4,14 +4,14 @@ import models.request.ProductRequest;
 import models.response.ProductResponse;
 import play.data.Form;
 import play.mvc.Http.MultipartFormData.FilePart;
-import service.AWSService;
+import services.interfaces.AWSService;
 import models.database.Product;
 import play.data.FormFactory;
 import play.libs.Files;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import service.ProductService;
+import services.interfaces.ProductService;
 
 import javax.inject.Inject;
 import java.util.List;

@@ -1,6 +1,8 @@
-package service;
+package services;
 
 import io.jsonwebtoken.*;
+import services.interfaces.RedisService;
+
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.HashMap;

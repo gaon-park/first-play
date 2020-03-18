@@ -1,6 +1,7 @@
-package service;
+package services.interfaces;
 
 import com.google.inject.ImplementedBy;
+import services.AWSServiceImpl;
 
 import java.io.File;
 

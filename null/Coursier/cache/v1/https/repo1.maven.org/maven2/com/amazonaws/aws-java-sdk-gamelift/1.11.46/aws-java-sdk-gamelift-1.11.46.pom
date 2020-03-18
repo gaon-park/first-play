@@ -10,7 +10,8 @@
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-java-sdk-gamelift</artifactId>
   <name>AWS Java SDK for AWS GameLift</name>
-  <description>The AWS Java SDK for AWS GameLift module holds the client classes that are used for communicating with AWS GameLift service.</description>
+  <description>The AWS Java SDK for AWS GameLift module holds the client classes that are used for communicating with
+      AWS GameLift services.</description>
   <url>https://aws.amazon.com/sdkforjava</url>
 
   <!-- The dependencies section in pom.xml is auto generated. No manual changes are allowed -->

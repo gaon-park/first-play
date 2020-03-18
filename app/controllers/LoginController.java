@@ -3,7 +3,10 @@ package controllers;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import service.*;
+import services.interfaces.GithubService;
+import services.interfaces.JWTService;
+import services.interfaces.RedisService;
+import services.interfaces.UserService;
 
 import javax.inject.Inject;
 import java.util.Map;

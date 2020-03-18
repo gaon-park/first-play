@@ -1,9 +1,10 @@
-package service;
+package services;
 
 import models.database.Product;
 import models.request.ProductRequest;
 import models.response.ProductResponse;
-import repository.ProductRepository;
+import repositories.ProductRepository;
+import services.interfaces.ProductService;
 
 import javax.inject.Inject;
 import java.util.ArrayList;

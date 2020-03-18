@@ -1,8 +1,9 @@
-package service;
+package services.interfaces;
 
 import com.google.inject.ImplementedBy;
 import models.request.ProductRequest;
 import models.response.ProductResponse;
+import services.ProductServiceImpl;
 
 import java.util.List;
 

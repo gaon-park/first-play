@@ -52,7 +52,7 @@
   <licenses>
     <license>
       <name>Public Domain</name>
-      <url>http://repository.jboss.org/licenses/cc0-1.0.txt</url>
+      <url>http://repositories.jboss.org/licenses/cc0-1.0.txt</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
@@ -117,8 +117,8 @@
     <!-- ***************** -->
     <!-- Repository Deployment URLs -->
     <!-- ***************** -->
-    <jboss.releases.repo.url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</jboss.releases.repo.url>
-    <jboss.snapshots.repo.url>https://repository.jboss.org/nexus/content/repositories/snapshots/</jboss.snapshots.repo.url>
+    <jboss.releases.repo.url>https://repositories.jboss.org/nexus/service/local/staging/deploy/maven2/</jboss.releases.repo.url>
+    <jboss.snapshots.repo.url>https://repositories.jboss.org/nexus/content/repositories/snapshots/</jboss.snapshots.repo.url>
 
     <!-- ************** -->
     <!-- Build settings -->

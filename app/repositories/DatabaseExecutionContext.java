@@ -1,4 +1,4 @@
-package repository;
+package repositories;
 
 import akka.actor.ActorSystem;
 import play.libs.concurrent.CustomExecutionContext;

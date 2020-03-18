@@ -1,4 +1,4 @@
-package repository;
+package repositories;
 
 import com.google.inject.ImplementedBy;
 import models.database.User;

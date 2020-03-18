@@ -75,8 +75,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <!-- Use properties so they could be overridden if needed -->
-    <ow2DistMgmtSnapshotsUrl>http://repository.ow2.org/nexus/content/repositories/snapshots</ow2DistMgmtSnapshotsUrl>
-    <ow2DistMgmtReleasesUrl>http://repository.ow2.org/nexus/service/local/staging/deploy/maven2</ow2DistMgmtReleasesUrl>
+    <ow2DistMgmtSnapshotsUrl>http://repositories.ow2.org/nexus/content/repositories/snapshots</ow2DistMgmtSnapshotsUrl>
+    <ow2DistMgmtReleasesUrl>http://repositories.ow2.org/nexus/service/local/staging/deploy/maven2</ow2DistMgmtReleasesUrl>
   </properties>
 
   <!-- Source Code Management -->

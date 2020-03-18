@@ -1,6 +1,7 @@
-package service;
+package services.interfaces;
 
 import com.google.inject.ImplementedBy;
+import services.RedisServiceImpl;
 
 @ImplementedBy(RedisServiceImpl.class)
 public interface RedisService {

@@ -5,9 +5,9 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Results;
-import service.JWTService;
-import service.RedisService;
-import service.UserService;
+import services.interfaces.JWTService;
+import services.interfaces.RedisService;
+import services.interfaces.UserService;
 
 import javax.inject.Inject;
 

@@ -10,7 +10,8 @@
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-java-sdk-applicationautoscaling</artifactId>
   <name>AWS Java SDK for AWS Application Auto Scaling</name>
-  <description>The AWS Java SDK for AWS Application Auto Scaling module holds the client classes that are used for communicating with AWS Application Auto Scaling service.</description>
+  <description>The AWS Java SDK for AWS Application Auto Scaling module holds the client classes that are used for
+      communicating with AWS Application Auto Scaling services.</description>
   <url>https://aws.amazon.com/sdkforjava</url>
 
   <!-- The dependencies section in pom.xml is auto generated. No manual changes are allowed -->

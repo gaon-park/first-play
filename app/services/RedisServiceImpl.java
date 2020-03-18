@@ -1,8 +1,10 @@
-package service;
+package services;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import services.interfaces.RedisService;
+
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +12,7 @@ import java.util.Map;
 /**
  * Class using redis for authentication system using jwt.
  */
-public class RedisServiceImpl implements RedisService{
+public class RedisServiceImpl implements RedisService {
     private String host = "192.168.99.100";
     private int port = 6379;
     private int timeout = 0;
