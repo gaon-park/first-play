@@ -3,13 +3,9 @@ package controllers;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import service.GithubService;
-import service.JWTService;
-import service.RedisService;
-import service.UserService;
+import service.*;
 
 import javax.inject.Inject;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
