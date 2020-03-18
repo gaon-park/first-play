@@ -25,4 +25,8 @@ libraryDependencies ++= Seq(
   "io.jsonwebtoken" % "jjwt" % "0.9.1"
 )
 
+// https://mvnrepository.com/artifact/redis.clients/jedis
+libraryDependencies += "redis.clients" % "jedis" % "3.2.0"
+
+
 PlayKeys.externalizeResourcesExcludes += baseDirectory.value / "conf" / "META-INF" / "persistence.xml"

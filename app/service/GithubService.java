@@ -7,6 +7,9 @@ import javax.inject.Inject;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * This class has the ability to use github oauth api.
+ */
 public class GithubService {
     private final static String CLIENT_ID = "2f0f7ccd9659b70d0bc5";
     private final static String CLIENT_SECRET = "6f0d56d94315681b0eed8789f4260e97ad40988f";
@@ -22,7 +25,7 @@ public class GithubService {
 
     /**
      * Generate oauth url based on CLIENT_ID and REDIRECT information for this application.
-     * @return
+     * @return url
      */
     public String getGitOAuthUrl(){
         //get code from github
@@ -33,7 +36,7 @@ public class GithubService {
     /**
      * Request a user access token using code received through url as parameter
      * @param code
-     * @return String
+     * @return ACCESS_TOKEN
      * @throws ExecutionException
      * @throws InterruptedException
      */

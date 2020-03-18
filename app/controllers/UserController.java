@@ -1,16 +1,15 @@
 package controllers;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import models.response.UserResponse;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Results;
 import service.JWTService;
+import service.RedisService;
 import service.UserService;
 
 import javax.inject.Inject;
-import javax.swing.text.html.Option;
 
 import java.util.Map;
 import java.util.Optional;
@@ -25,11 +24,13 @@ import static play.libs.Json.toJson;
 public class UserController extends Controller {
     private UserService userService;
     private JWTService jwtService;
+    private RedisService redisService;
 
     @Inject
-    public UserController(UserService userService, JWTService jwtService){
+    public UserController(UserService userService, JWTService jwtService, RedisService redisService){
         this.userService = userService;
         this.jwtService = jwtService;
+        this.redisService = redisService;
     }
 
     /**
@@ -56,7 +57,9 @@ public class UserController extends Controller {
         Optional<String> token  = request.getHeaders().get("accessToken");
         boolean result = false;
         if(token.isPresent()){
-            result = jwtService.validationToken(token.get());
+            if(!redisService.findBlacklist(request.session().hashCode(), token.get())){
+                result = jwtService.validationToken(token.get());
+            }
         }
         return result;
     }

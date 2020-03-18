@@ -10,6 +10,9 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import java.io.File;
 
+/**
+ * This class allows you to upload/delete images on the aws s3.
+ */
 public class AWSService {
     private static final String BUCKET_NAME = "first-play-bucket";
     private static final String ACCESS_KEY = "";
@@ -21,6 +24,11 @@ public class AWSService {
         amazonS3 = new AmazonS3Client(awsCredentials);
     }
 
+    /**
+     * Upload to Aws s3.
+     * @param file
+     * @return String(file path)
+     */
     public String uploadFile(File file){
         if(amazonS3 != null){
             try{
@@ -36,6 +44,10 @@ public class AWSService {
         return BUCKET_NAME + "/images/" + file.getName();
     }
 
+    /**
+     * Delete the corresponding file in the aws s3.
+     * @param filePath
+     */
     public void removeFile(String filePath){
         if(amazonS3 != null){
             amazonS3.deleteObject(BUCKET_NAME, filePath);

@@ -17,3 +17,11 @@ services:
                         - ./db-init:/docker-entrypoint-initdb.d
                 ports:
                         - 3306:3306
+        redis6001:
+                image: redis:5.0.3
+                container_name: redis6001
+                hostname: redis6001
+                labels:
+                        - "name=redis"
+                        - "mode-standalone"
+                network_mode: host
